@@ -16,10 +16,4 @@ public class MultipartPracticeMain {
     public static void main(String[] args) {
         SpringApplication.run(MultipartPracticeMain.class);
     }
-
-
-    @Bean
-    MultipartConfigElement multipartConfigElement() {
-        return new MultipartConfigElement(null, 50000, 50000, 50000);
-    }
 }

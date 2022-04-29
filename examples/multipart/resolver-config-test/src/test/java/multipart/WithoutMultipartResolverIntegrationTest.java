@@ -5,9 +5,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import javax.servlet.MultipartConfigElement;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +45,7 @@ class WithoutMultipartResolverIntegrationTest {
     Resource fileForUpload;
 
     @BeforeEach
-    void checkMultipartResolverBean() {
+    void loadTestFile() {
         fileForUpload = new ClassPathResource("myfile.txt");
     }
 
@@ -89,5 +92,17 @@ class WithoutMultipartResolverIntegrationTest {
 
     private String readString(Resource resource) throws IOException {
         return Files.readString(Path.of(resource.getURI()));
+    }
+
+    /**
+     * 자카르타의 멀티파트 콘피그를 빈 등록합니다.
+     */
+    @TestConfiguration
+    public static class ServletMultipartConfig {
+
+        @Bean
+        MultipartConfigElement multipartConfigElement() {
+            return new MultipartConfigElement(null, 50000, 50000, 50000);
+        }
     }
 }
