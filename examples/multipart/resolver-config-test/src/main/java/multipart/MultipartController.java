@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * @author : jbinchoo
@@ -60,6 +62,7 @@ public class MultipartController {
         if (!bindingResult.hasErrors())
             return this.receivePartArgs(partVO.getUpload());
 
+        System.out.println(partVO);
         return ResponseEntity.badRequest().build();
     }
 
@@ -70,6 +73,7 @@ public class MultipartController {
         if (!bindingResult.hasErrors())
             return this.receiveMultiPartArgs(fileVO.getUpload());
 
+        System.out.println(fileVO);
         return ResponseEntity.badRequest().build();
     }
 }
@@ -80,6 +84,9 @@ public class MultipartController {
 class PartVo {
 
     private Part upload;
+    private List<Part> uploadList;
+    private Part username;
+    private List<Part> usernameList;
 }
 
 @Setter
@@ -88,4 +95,7 @@ class PartVo {
 class MultipartVo {
 
     private MultipartFile upload;
+    private List<MultipartFile> uploadList;
+    private String username;
+    private List<String> usernameList;
 }
