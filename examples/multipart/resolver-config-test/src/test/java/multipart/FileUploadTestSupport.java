@@ -1,6 +1,5 @@
 package multipart;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -12,6 +11,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -21,12 +21,16 @@ import java.nio.file.Path;
  */
 public class FileUploadTestSupport {
 
-    TestRestTemplate restTemplate = new TestRestTemplate();
+    private final TestRestTemplate restTemplate;
+    private final Resource testFile;
 
-    Resource fileForUpload;
+    protected FileUploadTestSupport() {
+        restTemplate = new TestRestTemplate();
+        testFile = loadTestFile();
+    }
 
-    public void loadTestFile() {
-        fileForUpload = new ClassPathResource("myfile.txt");
+    protected Resource loadTestFile() {
+        return new ClassPathResource("myfile.txt");
     }
 
     protected ResponseEntity<String> doUpload(String url) {
@@ -42,6 +46,7 @@ public class FileUploadTestSupport {
 
     protected MultiValueMap<String, Object> getBody() {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        Resource fileForUpload = loadTestFile();
         body.add("upload", fileForUpload);
         body.add("uploadList", fileForUpload);
         body.add("uploadList", fileForUpload);
@@ -56,7 +61,17 @@ public class FileUploadTestSupport {
         return body;
     }
 
-    protected String readString(Resource resource) throws IOException {
-        return Files.readString(Path.of(resource.getURI()));
+    protected String getFileContent() {
+        return this.readAsString(testFile);
+    }
+
+    protected String readAsString(Resource resource) {
+        try {
+            return Files.readString(Path.of(resource.getURI()));
+        } catch (IOException e) {
+            PrintWriter printWriter = new PrintWriter(System.out);
+            e.printStackTrace(printWriter);
+            throw new IllegalArgumentException(e);
+        }
     }
 }

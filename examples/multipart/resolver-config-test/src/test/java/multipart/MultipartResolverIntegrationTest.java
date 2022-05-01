@@ -1,6 +1,5 @@
 package multipart;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,11 +23,6 @@ class MultipartResolverIntegrationTest extends FileUploadTestSupport {
     @LocalServerPort
     int port;
 
-    @BeforeEach
-    public void loadTestFile() {
-        super.loadTestFile();
-    }
-
     @ParameterizedTest
     @ValueSource(strings = {"/multipart/args", "/multipart/bind", "/part/args"})
     void successfulResolvingAndBindingBehaviors(String url) throws IOException {
@@ -37,7 +31,7 @@ class MultipartResolverIntegrationTest extends FileUploadTestSupport {
         var result = doUpload(endpoint);
 
         assert result.getStatusCode().is2xxSuccessful();
-        assert result.getBody().equals(readString(fileForUpload));
+        assert result.getBody().equals(getFileContent());
     }
 
     @ParameterizedTest
